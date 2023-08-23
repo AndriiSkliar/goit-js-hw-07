@@ -9,7 +9,7 @@ const markup = galleryItems
                 <img
                 class="gallery__image"
                 src="${preview}"
-                data-source=${original}"
+                data-source="${original}"
                 alt="${description}"
                 />
             </a>
@@ -20,29 +20,29 @@ list.innerHTML = markup;
 
 list.addEventListener("click", selectImg)
 
-let modalInstance = null;
-
 function selectImg(e) {
     e.preventDefault();
 
-    if (e.target.nodeName !== "IMG") {
+    const { target } = e;
+
+    if (target.nodeName !== "IMG") {
         return;
     }
 
     const instance = basicLightbox.create(`
-    <img src="${e.target.dataset.source}" width="800" height="600">
-`)
-    instance.show()
+    <img src="${target.dataset.source}" width="800" height="600">`,
+        {
+            onShow: () => window.addEventListener("keydown", closeModalOnEscape),
+            onClose: () => window.removeEventListener("keydown", closeModalOnEscape),
+        }
+    );
+    instance.show();
 
-    modalInstance = instance;
-
-    document.addEventListener("keydown", closeModalOnEscape);
-}
-
-function closeModalOnEscape(e) {
-    if (e.code === "Escape" && modalInstance) {
-        modalInstance.close();
-        document.removeEventListener("keydown", closeModalOnEscape);
+    function closeModalOnEscape(e) {
+        if (e.code === "Escape") {
+            instance.close();
+        }
     }
 }
+
 
